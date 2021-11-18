@@ -16,7 +16,7 @@ client.once("ready", () => {
   console.log("Client is ready...");
 });
 
-let ateMenu = [];
+// let ateMenu = [];
 client.on("messageCreate", async (message) => {
   if (!message.guild) return;
   if (message.author.bot) return;
@@ -29,10 +29,11 @@ client.on("messageCreate", async (message) => {
       menus.push(menu.menu);
     });
 
-    const __menus = menus.filter((menu) => !ateMenu.includes(menu));
-    const menu = __menus[Math.floor(Math.random() * __menus.length)];
+    // const __menus = menus.filter((menu) => !ateMenu.includes(menu));
+    // const menu = __menus[Math.floor(Math.random() * __menus.length)];
+    const menu = menus[Math.floor(Math.random() * menus.length)];
 
-    ateMenu.push(menu);
+    // ateMenu.push(menu);
     message.channel.send(menu);
   }
 
