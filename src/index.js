@@ -24,7 +24,6 @@ client.on("messageCreate", async (message) => {
   if (message.content === "점심") {
     const _menus = await Menu.find({});
     let menus = [];
-
     _menus.map((menu) => {
       menus.push(menu.menu);
     });
@@ -37,15 +36,48 @@ client.on("messageCreate", async (message) => {
     message.channel.send(menu);
   }
 
+  if (message.content === "메뉴") {
+    const _menus = await Menu.find({});
+    let menus = [];
+    _menus.map((menu) => {
+      menus.push(menu.menu);
+    });
+
+    let content = "";
+    menus.map((menu, index) => {
+      let temp = "";
+      if (index === menus.length) temp = `${index + 1}. ${menu}`;
+      else temp = `${index + 1}. ${menu}\n`;
+      content += temp;
+    });
+    message.channel.send(content);
+  }
+
   const prefix = "!";
-  const args = message.content.slice(prefix.length).trim().split(/ +/g);
+  const args = message.content.slice(prefix.length).trim().split(" ");
   const command = args.shift().toLowerCase();
   if (command === "add") {
     const newMenu = new Menu({ menu: args[0] });
-    await newMenu.save((err) => {
-      if (err) return console.log(err);
-      message.channel.send(`"${args[0]}" 메뉴를 추가했어요!`);
-    });
+
+    const checkMenu = await Menu.findOne({ menu: args[0] }).exec();
+    if (checkMenu === null) {
+      await newMenu.save((err) => {
+        if (err) return console.log(err);
+        message.channel.send(`"${args[0]}" 메뉴를 추가했어요!`);
+      });
+    } else {
+      message.channel.send("이미 등록된 메뉴입니다.");
+    }
+  }
+  if (command === "delete") {
+    const menu = await Menu.findOne({ menu: args[0] }).exec();
+
+    if (menu.length !== 0) {
+      await menu.remove();
+      message.channel.send(`"${args[0]}" 메뉴를 지웠습니다.`);
+    } else {
+      message.channel.send(`"${args[0]}" 메뉴를 찾지 못했습니다.`);
+    }
   }
 });
 
